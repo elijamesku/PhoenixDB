@@ -42,17 +42,17 @@ Manage EBS snapshots for disaster recovery.
 
 ***Install AWS CLI*** 
 
-Update package repositories 
+***Update package repositories***
 ```bash
 > sudo dnf update -y
 ```
 
-Install AWS CLI
+***Install AWS CLI***
 ```bash
 > sudo dnf install -y awscli
 ```
 
-Verify Installation
+***Verify Installation***
 ```bash
 > aws --version
 ```
@@ -61,6 +61,8 @@ Verify Installation
 ```bash
 > aws configure
 ```
+![Install AWS CLI](assets/installawscli.png)
+![Configure AWS CLI](assets/configureaws (1).png)
 
 ## 2. AWS EC2 Setup
 
@@ -85,12 +87,13 @@ Well-supported in AWS environments, allowing easy integration with EC2, S3, and 
 ```bash
 > sudo dnf install -y postgresql-server postgresql-contrib
 ```
-
+![PostgreSQL Installation](assets/postgresinstall.png)
 ***Initialize and start PostgreSQL***
 ```bash
 > sudo postgresql-setup --initdb
 > sudo systemctl enable --now postgresql
 ```
+
 
 ***Configure remote access***
 ```bash
@@ -101,10 +104,13 @@ Well-supported in AWS environments, allowing easy integration with EC2, S3, and 
 ```bash
 > sudo nano /var/lib/pgsql/data/pg_hba.conf
 ```
+
 ***Add***
 ```bash
 > host all all 0.0.0.0/0
 ```
+![HBA File Configuration](assets/hbafile.png)
+
 ***Restart Postgresql***
 ```bash
 > sudo systemctl restart postgresql
@@ -116,6 +122,7 @@ CREATE DATABASE clients;
 CREATE USER user1 WITH ENCRYPTED PASSWORD ' ';
 GRANT ALL PRIVI;EGES ON DATABSES clients TO user1;
 ```
+![Database Setup](assets/dbsetup(1).png)
 
 ## 4. PostgreSQL Backup and Restore
 ***Backup database to AWS S3***
@@ -124,6 +131,8 @@ Create a manual db backup
 > pg_dump -U user1 clients > clients-backup.sql
 > aws s3 cp clients-backup.sql s3://pgbackups/
 ```
+![Backups Configuration](assets/backupsconfigure.png)
+
 ***Automate Postgresql backups***
 ```bash
 > crontab -e
@@ -132,6 +141,8 @@ Create a manual db backup
 ```bash
 > 0 2 * * * pg_dump user1 clients | aws s3 cp - s3://pgbackups/clientsbck.sql
 ```
+![Automated Cron Jobs](assets/automatedcronjobs.png)
+
 ***Restore DB from s3***
 ```bash
 > aws s3 cp s3://pgbackups/clientsbck.sql/clients-backup.sql
@@ -195,6 +206,9 @@ Supports incremental backups, optimizing storage and cost efficiency.
 ```bash
 > 0 4 * * * /backup-ebs.sh
 ```
+![Bucket Creation](assets/bucketcreation.png)
+![Disable PostgreSQL](assets/disablepostgres.png)
+![Failover Test Successfully Restored](assets/failovertestsuccesfullyrestored.png)
 
 
 
